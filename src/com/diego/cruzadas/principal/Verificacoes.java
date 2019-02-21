@@ -11,37 +11,21 @@ public class Verificacoes {
 	}
 	
 	public Coordenada verifDisponibilidade(String palavra, boolean isVertical) {
-		System.out.println("Verificando disponibilidade para a palavra " + palavra + ". isVertical=" + isVertical);
-		
 		ArrayList<Coordenada> possiveisPosicoes = contarPossiveisPosicoes(palavra, isVertical);
 		
 		if(possiveisPosicoes.isEmpty()) {
-			System.out.println("nao existem letras em comum com a palavra " + palavra);
 			return null;
 		}
 		
-		System.out.println("posicoes para a palavra " + palavra + " em que existem letras em comum:");
-		for(Coordenada coordenada : possiveisPosicoes) {
-			System.out.println(coordenada.x + ", " + coordenada.y + " - " + coordenada.isVertical);
-		}
-		
-		System.out.println("- - - - - - - - x-x - - - - - - - - -");
-		
-		System.out.println("Desconsiderando posicoes inadequadas para a palavra " + palavra);
 		possiveisPosicoes = removerPosicoesInadequadas(possiveisPosicoes, palavra);
 		
-		System.out.println("- - - - - - - - x-x - - - - - - - - -");
-		
 		if(possiveisPosicoes.isEmpty()) {
-			System.out.println("Nao existe nenhuma coordenada boa para adicionar no tabuleiro para a palavra " + palavra);
 			return null;
-		}else {
-			System.out.println("A palavra " + palavra + " vai ser adicionada na posicao inicial (" + possiveisPosicoes.get(0).x + ", " + possiveisPosicoes.get(0).y + ")");
-			Random rand = new Random();
-			int i = rand.nextInt(possiveisPosicoes.size());
-			
-			return possiveisPosicoes.get(i);
 		}
+
+		Random rand = new Random();
+		int i = rand.nextInt(possiveisPosicoes.size());	
+		return possiveisPosicoes.get(i);
 	}
 	
 	public ArrayList<Coordenada> contarPossiveisPosicoes(String palavra, boolean isVertical){
@@ -89,8 +73,6 @@ public class Verificacoes {
 		for(Coordenada coordenada : posicoesPossiveis) {
 			if(verifLimites(coordenada.x, coordenada.y, palavra.length(), coordenada.isVertical) && verifCasasNoTabuleiro(coordenada, palavra)) {
 				posicoesAdequadas.add(coordenada);
-			}else {
-				System.out.println("A coordenada (" + coordenada.x + ", " + coordenada.y + ") nao vai ser considerada.");
 			}
 		}
 		
@@ -129,7 +111,7 @@ public class Verificacoes {
 				}
 			}
 			
-			if(posInicialX + palavra.length() < tab.tamanho-1) {
+			if(posInicialX + palavra.length() < tab.tamanho) {
 				if(tab.tabuleiro[posInicialX + palavra.length()][posInicialY].isOcupada) {
 					return false;
 				}
@@ -162,7 +144,7 @@ public class Verificacoes {
 				}
 			}
 			
-			if(posInicialY + palavra.length() < tab.tamanho-1) {
+			if(posInicialY + palavra.length() < tab.tamanho) {
 				if(tab.tabuleiro[posInicialX][posInicialY + palavra.length()].isOcupada) {
 					return false;
 				}

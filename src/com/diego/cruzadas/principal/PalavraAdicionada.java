@@ -6,12 +6,14 @@ public class PalavraAdicionada {
 	public String palavra;
 	public boolean isVertical;
 	public Casa[] casas;
+	public boolean isPrincipal;
 	
-	public PalavraAdicionada(int posicaoX, int posicaoY, String palavra, boolean isVertical) {
+	public PalavraAdicionada(int posicaoX, int posicaoY, String palavra, boolean isVertical, boolean isPrincipal) {
 		this.posicaoX = posicaoX;
 		this.posicaoY = posicaoY;
 		this.palavra = palavra;
 		this.isVertical = isVertical;
+		this.isPrincipal = isPrincipal;
 		casas = new Casa[palavra.length()];
 	}
 	

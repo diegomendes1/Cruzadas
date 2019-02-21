@@ -1,6 +1,7 @@
 package com.diego.cruzadas.principal;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Tabuleiro {
 	public int tamanho, numPalavras;
@@ -22,13 +23,19 @@ public class Tabuleiro {
 	
 	public void gerarTabuleiro() {
 		gerarTabuleiroVazio();
+		
+		faltam.clear();
+		adicionadas.clear();
+		puladas.clear();
+		palavrasJaTrocadas = false;
+		
 		faltam = Utilitario.carregarPalavras(tamanho, numPalavras, isPalavras);
 		posicionarPalavraInicial();
 		posicionarPalavras();
 	}
 	
 	public void posicionarPalavraInicial() {
-		String palavraInicial = faltam.get(0);
+		String palavraInicial = escolherUmaPalavra();
 		int tamanhoPalavra = palavraInicial.length();
 		if(tamanhoPalavra > tamanho) {
 			return;
@@ -40,10 +47,18 @@ public class Tabuleiro {
 		espacoDisponivelX /=2;
 		Coordenada posicao = new Coordenada(espacoDisponivelX, espacoDisponivelY, true);
 		adicionarPalavraTabuleiro(palavraInicial, posicao);
+		adicionadas.get(0).isPrincipal = true;
 	}
 	
 	public String escolherUmaPalavra() {
-		return faltam.get(0);
+		if(faltam.size() > 4) {
+			Random random = new Random();
+			int num = random.nextInt(faltam.size()/2);
+			return faltam.get(num);
+		}else {
+			return faltam.get(0);
+		}
+		
 	}
 	
 	public void posicionarPalavras() {
@@ -54,6 +69,10 @@ public class Tabuleiro {
 		String palavra = "";
 		
 		while(!faltam.isEmpty()){
+			if(adicionadas.size() == numPalavras/2) {
+				return;
+			}
+			
 			if(!segundaTentativa) {
 				palavra = escolherUmaPalavra();
 			}
@@ -62,7 +81,6 @@ public class Tabuleiro {
 			
 			Coordenada posicaoPossivel = verif.verifDisponibilidade(palavra, isVertical);
 			
-			System.out.println("/////////////////////////////////////////");
 			if(posicaoPossivel == null) {
 				if(!segundaTentativa) {
 					segundaTentativa = true;
@@ -112,56 +130,52 @@ public class Tabuleiro {
 		puladas.removeAll(palavrasAdicionadas);
 	}
 	
-	//O programa deve ter certeza que a posicao enviada pode ser usada.
 	public void adicionarPalavraTabuleiro(String palavra, Coordenada posicao) {
 		int posicaoX = posicao.x;
 		int posicaoY = posicao.y;
 		int letraAtual = 0;  
 		if(posicao.isVertical) {
 			for(int i = posicaoX; i < posicaoX+palavra.length(); i++) {
+				if(adicionadas.isEmpty()) {
+					tabuleiro[i][posicaoY].isPrincipal = true;
+				}
+				
 				if(!tabuleiro[i][posicaoY].isOcupada) {
 					tabuleiro[i][posicaoY].setLetra(palavra.charAt(letraAtual));
 					tabuleiro[i][posicaoY].isOcupada = true;
 					letraAtual++;
 				}else if(tabuleiro[i][posicaoY].getLetra() == palavra.charAt(letraAtual)){
-					//posicao.palavraAdicionada.casas[i - posicaoX].isInativa = true;
 					letraAtual++;
-				}else {
-					//Algum erro na escolha da posicao de palavras
-					//System.out.println("Deu erro, a palavra " + palavra + "nao deveria estar em (" + posicaoX + ", " + posicaoY + ").");
 				}
 			}
 		}else {
 			for(int j = posicaoY; j < posicaoY+palavra.length();j++) {
+				if(adicionadas.isEmpty()) {
+					tabuleiro[posicaoX][j].isPrincipal = true;
+				}
+				
 				if(!tabuleiro[posicaoX][j].isOcupada) {
 					tabuleiro[posicaoX][j].setLetra(palavra.charAt(letraAtual));
 					tabuleiro[posicaoX][j].isOcupada = true;
 					letraAtual++;
 				}else if(tabuleiro[posicaoX][j].getLetra() == palavra.charAt(letraAtual)) {
-					//posicao.palavraAdicionada.casas[j - posicaoY].isInativa = true;
 					letraAtual++;
-				}else {
-					//Algum erro na escolha da posicao de palavras
-					//System.out.println("Deu erro, a palavra " + palavra + " nao deveria estar em (" + posicaoX + ", " + posicaoY + ").");
 				}
 			}
 		}
-		imprimirTabuleiro();
 		atualizarListasParaAdicionadas(posicao.x, posicao.y, palavra, posicao.isVertical);
 	}
 	
 	public void atualizarListasParaAdicionadas(int x, int y, String palavra, boolean isVertical) {
 		if(faltam.contains(palavra)) {
 			faltam.remove(palavra);
-		}else if(puladas.contains(palavra)) {
-			//puladas.remove(palavra);
 		}
 		
-		PalavraAdicionada novaPalavra = new PalavraAdicionada(x, y, palavra, isVertical);
+		PalavraAdicionada novaPalavra = new PalavraAdicionada(x, y, palavra, isVertical, false);
+		
 		if(isVertical) {
 			
 			for(int i = x; i < x+palavra.length(); i++) {
-				//System.out.println(i + ", " + y + " | " + isVertical);
 				novaPalavra.casas[i-x] = tabuleiro[i][y];
 			}
 		}else {
@@ -181,12 +195,13 @@ public class Tabuleiro {
 	public void gerarTabuleiroVazio() {
 		for(int i = 0; i < tamanho; i++) {
 			for(int j = 0; j < tamanho; j++) {
-				tabuleiro[i][j] = new Casa('+', false);
+				tabuleiro[i][j] = new Casa(' ', false, false);
 			}
 		}
 	}
 	
 	public void imprimirTabuleiro() {
+		System.out.println("------------------------------");
 		System.out.println("Palavras Adicionadas: ");
 		for(PalavraAdicionada palavra : adicionadas) {
 			System.out.println(palavra.palavra);
