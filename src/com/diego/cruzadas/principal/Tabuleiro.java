@@ -58,7 +58,6 @@ public class Tabuleiro {
 		}else {
 			return faltam.get(0);
 		}
-		
 	}
 	
 	public void posicionarPalavras() {
@@ -68,10 +67,8 @@ public class Tabuleiro {
 		
 		String palavra = "";
 		
-		while(!faltam.isEmpty()){
-			if(adicionadas.size() == numPalavras/2) {
-				return;
-			}
+		System.out.println(numPalavras);
+		while(!faltam.isEmpty() && adicionadas.size() <= numPalavras/2){
 			
 			if(!segundaTentativa) {
 				palavra = escolherUmaPalavra();

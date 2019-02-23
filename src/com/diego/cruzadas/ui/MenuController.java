@@ -17,20 +17,16 @@ import javafx.stage.Stage;
 
 public class MenuController {
 	public int tamanhoTabuleiro;
-	public int numPalavras;
 	public boolean usandoPalavras;
 	
 	@FXML
 	public Slider sliderTamanhoTab;
-	@FXML
-	public Slider sliderNumPalavras;
 	@FXML
 	public CheckBox checkUsandoPalavras;
 	
 	@FXML
 	public void initialize() {
 		tamanhoTabuleiro = 15;
-		numPalavras = 20;
 		usandoPalavras = true;
 		
 		sliderTamanhoTab.valueProperty().addListener(new ChangeListener<Number>() {
@@ -40,28 +36,19 @@ public class MenuController {
 		    	tamanhoTabuleiro = newValue.intValue();
 		    }
 		});
-		
-		sliderNumPalavras.valueProperty().addListener(new ChangeListener<Number>() {
-		    @Override
-		    public void changed(ObservableValue<? extends Number> observable,
-		            Number oldValue, Number newValue) {
-		    	numPalavras = newValue.intValue();
-		    }
-		});
 	}
 	
 	@FXML
 	public void iniciarProcesso() {
 		Utilitario.escolherInformacoesIniciais();
 		
-		Tabuleiro tabuleiro = new Tabuleiro(tamanhoTabuleiro, numPalavras*2, usandoPalavras);
+		Tabuleiro tabuleiro = new Tabuleiro(tamanhoTabuleiro, tamanhoTabuleiro*2, usandoPalavras);
 		tabuleiro.gerarTabuleiro();
 		tabuleiro.imprimirTabuleiro();
 		carregarResultados(tabuleiro);
 	}
 	
 	public void carregarResultados(Tabuleiro tabuleiro) {
-		//Parent root = FXMLLoader.load(getClass().getResource("../ui/Resultados.fxml"));
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("../ui/Resultados.fxml"));
 		ResultadosController resController = new ResultadosController(tabuleiro);
 		loader.setController(resController);
